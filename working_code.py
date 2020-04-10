@@ -92,7 +92,7 @@ def population_agent2(N,k):
 
 #function to create population of datasets
 
-def populate_datasets(Agent1,n):
+def populate_datasets(Agent1,n,regulation,regulation_flag):
     data=[[],[],[],[]] #list of all present datasets according to their types
     for i in range(len(Agent1)):
       for j in range(n):
@@ -102,13 +102,12 @@ def populate_datasets(Agent1,n):
         o_mu=Agent1[i][4]
         o_sig=Agent1[i][5]  
         # print (float(sys.argv[1]))
-        regulation = float(sys.argv[1])
         #v=Q.rvs()
         #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,random.randint(1,4),round(random.random(),2),round(Q,3))
         typ=random.randint(0,3)
         # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,random.uniform(0,1),Q,len(data[typ]))
         if(Q < o_mu - regulation * o_sig):
-          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),True)
+          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
         else:
           d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
         #print("len(data[typ-1]):",len(data[typ-1]))
@@ -182,7 +181,7 @@ def find(seller,agent,Dataset,typ):
 #     #     print(Dataset[x])    
 #     return ans
 
-def intro_newdatasets(Agent1,Dataset,t):
+def intro_newdatasets(Agent1,Dataset,t,regulation,regulation_flag):
   #data=Dataset #list of all present datasets according to their types
   #Agent1=A1
   for i in range(len(Agent1)):      
@@ -206,14 +205,13 @@ def intro_newdatasets(Agent1,Dataset,t):
       o_mu=Agent1[i][6]
       o_sig=Agent1[i][7]  
       # print (float(sys.argv[1]))
-      regulation = float(sys.argv[1])
       #Q=random.uniform(0,repu)
       #v=Q.rvs()
       #print("old repu:",repu)
       #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,round(random.random(),2),round(Q,3))
       P=get_q(price,1,Agent1[i][4],Agent1[i][5])
       if(Q < o_mu - regulation * o_sig):
-        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),True)
+        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
       else:
         d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
       
@@ -468,11 +466,11 @@ def print_datasets(Agent1):
   for i in range(len(Agent1)):
     print(Agent1[i][2])
 
-def simulate(Agent1,Agent2,ns,nb, k,dcount):
+def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
     
     # Agent1=population_agent1(ns)
     # Agent2=population_agent2(nb,ns)
-    Dataset=populate_datasets(Agent1,10)
+    Dataset=populate_datasets(Agent1,10,regulation,regulation_flag)
     # print (Dataset)
     # print ("======================================================")
     Seller_card=[]
@@ -497,7 +495,7 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount):
             h=1
             plt_repu=create_plot_repu(Agent1,plt_repu)
         if s>0:
-            Agent1,Dataset=intro_newdatasets(Agent1,Dataset,t_para)   
+            Agent1,Dataset=intro_newdatasets(Agent1,Dataset,t_para,regulation,regulation_flag)   
             Agent2=change_req(Agent2)
         
         # print_datasets(Agent1)
@@ -533,9 +531,9 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount):
         lrev+=Agent1[rev][3][dsets]
       reven.append(lrev)
       trev+=lrev      
-    print (avg_quality_f)
-    print ()
-    print (avg_quality_notf)
+    # print (avg_quality_f)
+    # print ()
+    # print (avg_quality_notf)
     return plt_repu,c,Seller_card,dcount,reven,avg_quality_f,avg_quality_notf
 
 def name(arr):
@@ -670,6 +668,8 @@ def pie(sizes,keyword):
 
 sellers=5
 buyers=500
+regulation_flag = bool(sys.argv[1])
+regulation = float(sys.argv[2])
 # Agent1=population_agent1(sellers)
 # Agent2=population_agent2(buyers,sellers)
 
@@ -698,7 +698,7 @@ Agent2=population_agent2(buyers,sellers)
 # D.append(Dataset1)
 # D.append(Dataset2)
 for i in range(batch):
-  srepu,count,card,dcount,reven,avg_qf,avg_qnf=simulate(Agent1,Agent2,sellers,buyers, sim,dcount)
+  srepu,count,card,dcount,reven,avg_qf,avg_qnf=simulate(Agent1,Agent2,sellers,buyers, sim,dcount,regulation,regulation_flag)
   print ()
   plot_fig(srepu)
   #pie(card,"sales")
