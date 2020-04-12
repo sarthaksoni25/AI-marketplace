@@ -180,7 +180,29 @@ def find(seller,agent,Dataset,typ):
 #     # for x in range(len(Dataset)):
 #     #     print(Dataset[x])    
 #     return ans
+def update_quality(Agent1,Dataset,regulation,regulation_flag):
+  for i in range(len(Agent1)):      
+        o_mu=Agent1[i][6]
+        o_sig=Agent1[i][7]  
+        for j in Agent1[i][2]:
+          if(j[8]):
+            # print ('j')
+            # print (j)
+            j[4] = o_mu - regulation*o_sig
+            j[8] = False
+            id = j[1]
+            price = j[3]
+            for k in Dataset[j[2]]:
+              if (k[1] == id and k[3] == price):
+                k[5] = o_mu - regulation*o_sig                
+                k[8] = False
+                # print('k')
+                # print (k)
+    # for x in range(len(Dataset)):
+    #     print(Dataset[x])    
+  return Agent1,Dataset
 
+  
 def intro_newdatasets(Agent1,Dataset,t,regulation,regulation_flag):
   #data=Dataset #list of all present datasets according to their types
   #Agent1=A1
@@ -506,6 +528,7 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
         # print("Dataset:",Dataset)
         avg_quality_f.append(q_flagged)
         avg_quality_notf.append(q_not_flagged)
+        update_quality(Agent1,Dataset,regulation,regulation_flag)
         Agent1,Dataset=update_repu(Agent1,feedback,Dataset)
            
         # print("feedback after return:")
@@ -520,8 +543,8 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
         t_para=avg_count.index(max(avg_count))
         if(t_para==0): 
             t_para=1
-        count=[0,0,0,0]  
-
+        count=[0,0,0,0]
+        
         #Agent1=change_mu_sig1(Agent1)
     reven=[]
     trev=0.0
