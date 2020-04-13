@@ -106,14 +106,14 @@ def populate_datasets(Agent1,n,regulation,regulation_flag):
         #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,random.randint(1,4),round(random.random(),2),round(Q,3))
         typ=random.randint(0,3)
         # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,random.uniform(0,1),Q,len(data[typ]))
-        # if(Q < o_mu - regulation * o_sig):
-        #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
-        # else:
-        #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
-        if(Q < regulation):
+        if(Q < o_mu - regulation * o_sig):
           d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
         else:
           d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
+        # if(Q < regulation):
+        #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
+        # else:
+        #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
         
         #print("len(data[typ-1]):",len(data[typ-1]))
         #print("typ-1",typ-1)
@@ -237,14 +237,14 @@ def intro_newdatasets(Agent1,Dataset,t,regulation,regulation_flag):
       #print("old repu:",repu)
       #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,round(random.random(),2),round(Q,3))
       P=get_q(price,1,Agent1[i][4],Agent1[i][5])
-      # if(Q < o_mu - regulation * o_sig):
-      #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
-      # else:
-      #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
-      if(Q < regulation):
+      if(Q < o_mu - regulation * o_sig):
         d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
       else:
         d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
+      # if(Q < regulation):
+      #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
+      # else:
+      #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
       
       Agent1[i][3].append(0) #initialise the revenue earned from that dataset to be 0
       Agent1[i][2].append(d) #associate the dataset with its respective agent 1 by inclusing it in agent 1s dataset list
@@ -537,7 +537,7 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
         # print("Dataset:",Dataset)
         avg_quality_f.append(q_flagged)
         avg_quality_notf.append(q_not_flagged)
-        # update_quality(Agent1,Dataset,regulation,regulation_flag)
+        update_quality(Agent1,Dataset,regulation,regulation_flag)
         Agent1,Dataset=update_repu(Agent1,feedback,Dataset)
            
         # print("feedback after return:")
