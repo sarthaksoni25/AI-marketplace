@@ -107,9 +107,10 @@ def populate_datasets(Agent1,n,regulation,regulation_flag):
         typ=random.randint(0,3)
         # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,random.uniform(0,1),Q,len(data[typ]))
         if(Q < o_mu - regulation * o_sig):
-          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
-        else:
-          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
+          Agent1[i][1] = Agent1[i][1] / 3
+          # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
+        # else:
+        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
         # if(Q < regulation):
         #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
         # else:
@@ -238,9 +239,10 @@ def intro_newdatasets(Agent1,Dataset,t,regulation,regulation_flag):
       #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,round(random.random(),2),round(Q,3))
       P=get_q(price,1,Agent1[i][4],Agent1[i][5])
       if(Q < o_mu - regulation * o_sig):
-        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
-      else:
-        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
+        Agent1[i][1] = Agent1[i][1]/3
+        # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
+      # else:
+      d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
       # if(Q < regulation):
       #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
       # else:
@@ -554,7 +556,7 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
             t_para=1
         count=[0,0,0,0]
         
-        #Agent1=change_mu_sig1(Agent1)
+        #Agent1=change_mu_sig1(Agent1))
     reven=[]
     trev=0.0
     for rev in range(len(Agent1)):
@@ -735,7 +737,7 @@ for i in range(batch):
   plot_fig(srepu)
   #pie(card,"sales")
   #pie(reven,"revenue")
-  dbar(card,reven)
+  # dbar(card,reven)
   #plot_fig(card)
 #   Repu.append(srepu)
 #   #print (repu)
@@ -783,7 +785,8 @@ for i in range(len(dcount)):
   objects.append(i+1)
 y_pos = np.arange(4)
 
-plot_line_x(avg_qf,avg_qnf)
+print (sum(avg_qnf) / len(avg_qnf))
+# plot_line_x(avg_qf,avg_qnf)
 
 
 # plt.bar(y_pos,dcount, align='center', alpha=0.5)
