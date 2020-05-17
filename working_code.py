@@ -6,7 +6,7 @@ import random
 from operator import itemgetter
 import scipy.stats as stats
 from scipy.stats import truncnorm
-
+import pandas as pd
 # def get_q(a,b,mu,sigma):
 #     #a, b = 0, 1
 
@@ -35,7 +35,7 @@ def create_agent2(ID,TYPE,price,k,mu,sig):
     a=round(random.random(),2)
     b=round(random.random(),2)
     g=round(random.random(),2)
-    t=random.uniform(0.0,0.1)
+    t=random.uniform(0.0, 0.1)
     sell_list=[]
     for j in range(k):
       sell_list.append(0)
@@ -107,10 +107,11 @@ def populate_datasets(Agent1,n,regulation,regulation_flag):
         typ=random.randint(0,3)
         # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,random.uniform(0,1),Q,len(data[typ]))
         if(Q < o_mu - regulation * o_sig):
-          Agent1[i][1] = Agent1[i][1] / 3
-          # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
-        # else:
-        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
+          # Agent1[i][1] = Agent1[i][1] / 1.5
+          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
+          Agent1[i][4] = Agent1[i][4] + 2
+        else:
+          d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),False)
         # if(Q < regulation):
         #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,typ,Q,Q,len(data[typ]),regulation_flag)
         # else:
@@ -239,10 +240,11 @@ def intro_newdatasets(Agent1,Dataset,t,regulation,regulation_flag):
       #d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,round(random.random(),2),round(Q,3))
       P=get_q(price,1,Agent1[i][4],Agent1[i][5])
       if(Q < o_mu - regulation * o_sig):
-        Agent1[i][1] = Agent1[i][1]/3
-        # d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
-      # else:
-      d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
+        # Agent1[i][1] = Agent1[i][1]/3
+        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
+        Agent1[i][4] = Agent1[i][4] + 2
+      else:
+        d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),False)
       # if(Q < regulation):
       #   d=create_dataset(Agent1[i][0],len(Agent1[i][2])+1,t,Q,Q,len(Dataset[t]),regulation_flag)
       # else:
@@ -319,33 +321,6 @@ def create_emptyfb(Agent1,s):
 
     return empty_feedback
 
-# def update_repu(Agent1,f,Dataset):
-    
-#     A=Agent1
-#     D=Dataset
-#     n=0
-#     for i in range(len(f)):
-#         s=0.0
-#         for j in range(len(f[i])):
-#           #print("Agent:",i,"score of dataset:",f[i][j][0],"purchase of Datasets:",f[i][j][1])
-#           if(f[i][j][1]>0):
-#             s+=f[i][j][0]/f[i][j][1]
-#             D[A[i][2][j][2]-1][A[i][2][j][7]][5]=f[i][j][1]
-#             D[A[i][2][j][2]-1][A[i][2][j][7]][6]=f[i][j][0]
-#             D[A[i][2][j][2]-1][A[i][2][j][7]][4]=f[i][j][0]/f[i][j][1]
-#             A[i][2][j][5]=f[i][j][1]
-#             A[i][2][j][6]=f[i][j][0]
-#             A[i][2][j][4]=f[i][j][0]/f[i][j][1]
-
-
-
-#         r=s/(len(f[i]))
-#         A[i][1]=r
-#         print("seller:",i,"tot_score:",s,"Datasets:",len(A[i][2]),"len of f(i):",len(f[i]),"repu:",r)
-      
-
-#     return A,D
-
 
 def update_repu(Agent1,feedback,Dataset):
     # print ("FEEDBACK")
@@ -373,14 +348,9 @@ def update_repu(Agent1,feedback,Dataset):
             #print_datasets(Agent1)
             Agent1[i][2][j][4]=feedback[i][j][0]/feedback[i][j][1]
 
-
-
         r=s/(len(feedback[i]))
         Agent1[i][1]=r
         #print("seller:",i,"tot_score:",s,"Datasets:",len(Agent1[i][2]),"len of f(i):",len(feedback[i]),"repu:",r)
-      
-    
-
     return Agent1,Dataset
 
 def create_plot_repu(Agent1,plt_repu):
@@ -393,53 +363,12 @@ def create_plot_repu(Agent1,plt_repu):
     return plt
 
 def create_plot_data(count,c):
-
     plt=c
     for i in range(len(count)):
         plt[i].append(count[i])
     return plt
 
-# def interact(A1,A2,f,cnt,Dataset,Card):
-#   Agent1=A1
-#   Agent2=A2
-#   feedback=f
-#   count=cnt
-#   card=Card
-
-#   for i in range(len(Agent2)): #ith Agent 2
-#             t=Agent2[i][1]           #type of dataset agent 2 is looking for
-#             #print ("trying...",i,"len:",len(Agent2))
-#             ans=find(Agent1,Agent2[i],Dataset[t-1])  #find if any dataset which meets the agent's condition exist
-#             if len(ans)>0 :
-#               #score=round(random.random(),2)
-#               Agent2[i][6][ans[0]-1001]+=1
-#               score=get_q(0,1,Agent1[ans[0]-1001][4],Agent1[ans[0]-1001][5])
-#               Agent1[ans[0]-1001][3][ans[1]-1]+=ans[3]
-#               #print ("ans[0]-1001 = ",ans[0]-1001,"ans[1]-1 = ",ans[1]-1)
-#               if(score>=ans[4]-Agent2[i][5] and score<=ans[4]):
-#                 feedback[ans[0]-1001][ans[1]-1][0]+=ans[4] 
-#               if(score<ans[4]-Agent2[i][5]):
-#                 feedback[ans[0]-1001][ans[1]-1][0]+=score
-#                 card[ans[0]-1001][-1]-=1
-#               if( score>ans[4]):
-#                 feedback[ans[0]-1001][ans[1]-1][0]+=score
-#                 card[ans[0]-1001][-1]+=1
-#               feedback[ans[0]-1001][ans[1]-1][1]+=1   
-#               #print("score:",score,"diff limit:",ans[4]-Agent2[i][5])   
-#               #print("buyer bought dataset from seller",ans[0]-1001,"with id:",ans[1]-1,"score:",feedback[ans[0]-1001][ans[1]-1][0],"purc:",feedback[ans[0]-1001][ans[1]-1][1])
-#               count[ans[2]-1]+=1
-#               print("seller:",ans[0]-1001,"dataset:",ans[1]-1,"score:",score)
-#               print(feedback[ans[0]-1001])
-#               #print(feedback[ans[0]-1001][ans[1]-1][1])
-#               print(Agent2[i][6])
-#   print("feedback before return:")
-#   for x in range(len(feedback)):
-#             print(feedback[i])
-#   return Agent1,feedback,count,card
-
 def interact(Agent1,Agent2,feedback,count,Dataset,Card,dcount):
-  
-  
   card=Card
   quality_flagged = 0
   quality_not_flagged = 0
@@ -495,7 +424,6 @@ def interact(Agent1,Agent2,feedback,count,Dataset,Card,dcount):
   
 
 def print_datasets(Agent1):
-
   for i in range(len(Agent1)):
     print(Agent1[i][2])
 
@@ -539,7 +467,7 @@ def simulate(Agent1,Agent2,ns,nb, k,dcount,regulation,regulation_flag):
         # print("Dataset:",Dataset)
         avg_quality_f.append(q_flagged)
         avg_quality_notf.append(q_not_flagged)
-        update_quality(Agent1,Dataset,regulation,regulation_flag)
+        # update_quality(Agent1,Dataset,regulation,regulation_flag)
         Agent1,Dataset=update_repu(Agent1,feedback,Dataset)
            
         # print("feedback after return:")
@@ -586,7 +514,7 @@ def name(arr):
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib import cm
-mpl.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
+# mpl.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
 mpl.rcParams['figure.dpi'] = 200
 # Then, "ALWAYS use sans-serif fonts"
 # plt.rcParams['font.family'] = "Helvetica"
@@ -610,10 +538,18 @@ def plot_fig(repu):
     plt.savefig('regulation =' + sys.argv[2] + '.png')
 
 def plot_line_x(avg_quality_f, avg_quality_notf):
-  plt.plot(avg_quality_f,color='black', label = 'flagged')
-  plt.plot(avg_quality_notf ,  label = 'not flagged')
+  print (np.arange(1,len(avg_quality_notf) , 1))
+  df = pd.DataFrame({ 'index' : np.arange(0,len(avg_quality_notf) , 1) , 'y' : avg_quality_notf} )
+  df_f = pd.DataFrame({ 'index' : np.arange(0,len(avg_quality_f) , 1) , 'y' : avg_quality_f} )
+  # plt.plot(avg_quality_f,color='black', label = 'flagged')
+  # plt.plot(avg_quality_notf ,  label = 'not flagged')
+  # plt.plot(avg_quality_f ,  label = 'flagged')
+  rolling_mean = df.y.rolling(window=20).mean()
+  rolling_mean_f = df_f.y.rolling(window=20).mean()
   plt.ylabel('Average Quality')
   plt.xlabel('Iterations') 
+  plt.plot(df.index, rolling_mean, label='Not Flagged (rol. avg)', color='orange')
+  plt.plot(df_f.index, rolling_mean_f, label='Flagged (rol. avg)', color='red')
   plt.legend()
   plt.savefig('Quality(regulation =' + sys.argv[2] + ').png')
   plt.show()
@@ -700,132 +636,111 @@ def pie(sizes,keyword):
     # plt.imshow(p1,cmap='gray')
     plt.show()
 
-sellers=5
-buyers=500
-regulation_flag = bool(sys.argv[1])
-regulation = float(sys.argv[2])
-# Agent1=population_agent1(sellers)
-# Agent2=population_agent2(buyers,sellers)
+if __name__=="__main__": 
+  sellers=3
+  buyers=500
+  regulation_flag = bool(sys.argv[1])
+  regulation = float(sys.argv[2])
+  # Agent1=population_agent1(sellers)
+  # Agent2=population_agent2(buyers,sellers)
 
-# for i in range(len(Agent1)):
-#   print(Agent1[i])
+  # for i in range(len(Agent1)):
+  #   print(Agent1[i])
 
-# for i in range(len(Agent2)):
-#   print(Agent2[i])
+  # for i in range(len(Agent2)):
+  #   print(Agent2[i])
 
-sim=500
-batch=1
-Repu=[]
-repu=[]
-dcount=[0,0,0,0]
-for i in range(sellers):
-  repu.append([])
-  for j in range(sim):
-    repu[i].append(0)
+  sim=170
+  batch=1
+  Repu=[]
+  repu=[]
+  dcount=[0,0,0,0]
+  for i in range(sellers):
+    repu.append([])
+    for j in range(sim):
+      repu[i].append(0)
 
-Agent1=population_agent1(sellers)
-Agent2=population_agent2(buyers,sellers)
-# Dataset1=populate_datasets(Agent1,10) 
-# Dataset2=[]
-# Dataset2.extend(Dataset1)   
-# D=[]
-# D.append(Dataset1)
-# D.append(Dataset2)
-for i in range(batch):
-  srepu,count,card,dcount,reven,avg_qf,avg_qnf=simulate(Agent1,Agent2,sellers,buyers, sim,dcount,regulation,regulation_flag)
-  print ()
-  plot_fig(srepu)
-  #pie(card,"sales")
-  #pie(reven,"revenue")
-  # dbar(card,reven)
-  #plot_fig(card)
-#   Repu.append(srepu)
-#   #print (repu)
-# #print (Repu)
+  Agent1=population_agent1(sellers)
+  Agent2=population_agent2(buyers,sellers)
+  # Dataset1=populate_datasets(Agent1,10) 
+  # Dataset2=[]
+  # Dataset2.extend(Dataset1)   
+  # D=[]
+  # D.append(Dataset1)
+  # D.append(Dataset2)
+  for i in range(batch):
+    srepu,count,card,dcount,reven,avg_qf,avg_qnf=simulate(Agent1,Agent2,sellers,buyers, sim,dcount,regulation,regulation_flag)
+    # print ()
+    # plot_fig(srepu)
+    #pie(card,"sales")
+    #pie(reven,"revenue")
+    # dbar(card,reven)
+    #plot_fig(card)
+  #   Repu.append(srepu)
+  #   #print (repu)
+  # #print (Repu)
 
-# #print(repu[0])
-# for i in range(batch):
-#   for j in range(sellers):
-#     for k in range(sim):
-#       repu[j][k]+=Repu[i][j][k]
+  # #print(repu[0])
+  # for i in range(batch):
+  #   for j in range(sellers):
+  #     for k in range(sim):
+  #       repu[j][k]+=Repu[i][j][k]
 
-# for i in range(sellers):
-#   for j in range(sim):
-#     repu[i][j]=repu[i][j]/batch
+  # for i in range(sellers):
+  #   for j in range(sim):
+  #     repu[i][j]=repu[i][j]/batch
 
-# print(repu[0])
-# print(len(repu))
-# print(len(repu[0]))
-# plot_fig(repu)
-print(dcount)
+  # print(repu[0])
+  # print(len(repu))
+  # print(len(repu[0]))
+  # plot_fig(repu)
+  # print(dcount)
 
-# Commented out IPython magic to ensure Python compatibility.
-# %matplotlib inline
-# import matplotlib.pyplot as plt
+  # Commented out IPython magic to ensure Python compatibility.
+  # %matplotlib inline
+  # import matplotlib.pyplot as plt
 
-# #plt.figure(figsize=(20,20))
-# plt.title('Reputation of Seller over time')
-# plt.ylabel('Reputation')
-# #plt.yticks(np.arange(0,1.01,0.01))
-# plt.xlabel('Time [No. of simulations]')
-# #put plot in the notebook
-# for i in repu:
-#     plt.plot(i)
+  # #plt.figure(figsize=(20,20))
+  # plt.title('Reputation of Seller over time')
+  # plt.ylabel('Reputation')
+  # #plt.yticks(np.arange(0,1.01,0.01))
+  # plt.xlabel('Time [No. of simulations]')
+  # #put plot in the notebook
+  # for i in repu:
+  #     plt.plot(i)
 
-# # and add some details to the plot
+  # # and add some details to the plot
 
-# plt.ylim(0,1)
-# plt.show()
+  # plt.ylim(0,1)
+  # plt.show()
 
-print(dcount)
+  # print(dcount)
 
-plt.figure()
-objects = []
-for i in range(len(dcount)):
-  objects.append(i+1)
-y_pos = np.arange(4)
+  plt.figure()
+  objects = []
+  for i in range(len(dcount)):
+    objects.append(i+1)
+  y_pos = np.arange(4)
+  f= open("guru99.txt","a")
+  f.write(str(sum(avg_qnf) / len(avg_qnf)) + ',')
+  f.close()
+  # plot_line_x(avg_qf,avg_qnf)
 
-print (sum(avg_qnf) / len(avg_qnf))
-# plot_line_x(avg_qf,avg_qnf)
+  # include customer loyalty
+  # vary mu and sigma of seller(or buyer)(and let other remain same)
+  # regulatory dimension:
+  # 2)let the buyer also flag if reputation falls below tolerance
+  # 1)have a regulatory quality declared-
 
+  """varying mu and sigma:
 
-# plt.bar(y_pos,dcount, align='center', alpha=0.5)
-# plt.xticks(y_pos, objects)
-# plt.ylabel('Usage')
-# plt.title('Programming language usage')
-
-# plt.show()
-
-# data = [[5., 25., 50., 20.],
-#   [4., 23., 51., 17.],
-#   [6., 22., 52., 19.]]
-
-# X = np.arange(4)
-# plt.bar(X + 0.00, data[0], color = 'b', width = 0.25)
-# plt.bar(X + 0.25, data[1], color = 'g', width = 0.25)
-# plt.bar(X + 0.50, data[2], color = 'r', width = 0.25)
-
-# plt.show()
-
-# include customer loyalty
-# vary mu and sigma of seller(or buyer)(and let other remain same)
-# regulatory dimension:
-# 2)let the buyer also flag if reputation falls below tolerance
-# 1)have a regulatory quality declared-
-
-#!apt install gnuplot
-
-# print(Agent2)
-
-"""varying mu and sigma:
-
-1.   if mu,sig of seller is increased:
-     
+  1.   if mu,sig of seller is increased:
+      
 
 
->>* the reputation of sellers increase
+  >>* the reputation of sellers increase
 
-2.   if mu,sig of seller is decreased:
-3.   if the datasets produced in the market are of lowered in quality (by delta) than the prev ones:   
->* the market still sustains
-"""
+  2.   if mu,sig of seller is decreased:
+  3.   if the datasets produced in the market are of lowered in quality (by delta) than the prev ones:   
+  >* the market still sustains
+  """
